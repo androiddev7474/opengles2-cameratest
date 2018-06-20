@@ -7,8 +7,56 @@
     android:orientation="vertical"
     tools:context=".MainActivity">
 
-    <se.ex3.gl.myapplication.MyGLsurfaceView
 
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="3"
+        >
+
+        <Switch
+            android:id="@+id/eyeX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EYE X"
+            android:checked="true"
+            />
+
+        <Switch
+            android:id="@+id/eyeY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EYE Y"
+            />
+
+        <Switch
+            android:id="@+id/centerX"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CENTER X"
+            />
+
+        <Switch
+            android:id="@+id/centerY"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CENTER Y"
+            />
+
+        <Switch
+            android:id="@+id/translate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRANSLATE"
+            />
+
+
+
+    </GridLayout>
+
+    <se.ex3.gl.myapplication.MyGLsurfaceView
+        android:id="@+id/glsurface_id"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
 

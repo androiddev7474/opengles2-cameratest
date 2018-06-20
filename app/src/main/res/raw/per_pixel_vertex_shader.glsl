@@ -25,7 +25,7 @@ void main()
 	v_Color = a_Color;
 
     text_coord = a_TexCoordinate * vec2(0.5, 0.5);
-    text_coord = text_coord + vec2(0.0, 0.25);
+    text_coord = text_coord + vec2(0.0, 0);
     v_TexCoordinate = text_coord;
 
 	vertexColor = vec4(0.9, 0.4, 0.9, 1.0);

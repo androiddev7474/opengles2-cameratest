@@ -6,6 +6,10 @@ import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.Display;
+import android.view.WindowManager;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
@@ -23,10 +27,16 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     private GLrender gLrender;
     private TextureCreator textureCreator;
 
-    private float incr, centerX;
+    private float incr, lookAtVar;
     private boolean increment = true;
+    private boolean eyeXenabled, eyeYenabled, centerXenabled, centerYenabled, translateEnabled;
+
+    private float xPos, yPos;
+    private float eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
+    private boolean down, up, move;
 
     private float[] mViewMatrix = new float[16];
+    private int screenWidth, screenHeight;
 
     private int nominator = 10000;
 
@@ -38,7 +48,17 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
         this.context = context;
 
-        models.create2Dpolygon(0.5f, 0.5f, 0f);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        WindowManager windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Display defaultDisplay = windowManager.getDefaultDisplay();
+        defaultDisplay.getRealMetrics(displayMetrics);
+        screenWidth = displayMetrics.widthPixels;
+        screenHeight = displayMetrics.heightPixels;
+
+        eyeXenabled = true;
+
+        //models.create2Dpolygon(0.5f, 0.5f, 0f);
+        models.create3Dpolygon(0.5f, 0.5f, 0.5f);
 
         float[] blc = {0, 0};
         float[] brc = {1, 0};
@@ -55,6 +75,9 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
     @Override
     public void onSurfaceCreated(GL10 gl, EGLConfig config) {
+
+
+        GLES20.glEnable(GLES20.GL_CULL_FACE);
 
         //skapa texturer
         float[][] bitmapDimens = {{512, 512}};
@@ -76,37 +99,104 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
 
 
-        gLprojection.perspectiveProject(width, height);
+        gLprojection.perspectiveProject(width, height, 1, 10);
     }
 
     @Override
     public void onDrawFrame(GL10 gl) {
 
         GLES20.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
 
         // rotation var tionde sekund
         long time = SystemClock.uptimeMillis() % nominator;
         float angleInDegrees = (360.0f / nominator) * ((int) time);
 
         Matrix.setIdentityM(models.getmModelMatrix(), 0);
-        Matrix.translateM(models.getmModelMatrix(), 0, -0f, 0.0f, -2.2f);
+        Matrix.translateM(models.getmModelMatrix(), 0, -0f, 0.0f, -0.0f);
         /*Matrix.rotateM(models.getmModelMatrix(), 0, angleInDegrees, 1.0f, 1.0f, 0.5f);
         */
         GLES20.glUseProgram(mProgramHandle);
 
-        if (centerX > 0.8)
+        if (lookAtVar > 3)
             increment = false;
-        if (centerX < -0.8)
+        if (lookAtVar < -3)
             increment = true;
 
         if (increment)
-            centerX += 0.05;
+            lookAtVar += 0.01;
         else
-            centerX -= 0.05;
+            lookAtVar -= 0.01;
 
-        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, 0, 0, 0.5f, centerX, -0.3f, -0, 0, 1, 0);
+        //Log.i("lookAT", xPos + " (" + eyeX + ")" );
+        Log.i("Center X", "" + centerX);
+
+        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, -2f, centerX, centerY, -0, 0, 1, 0);
 
 
         gLrender.render();
+    }
+
+    public void setXpos(float xPos) {
+
+        this.xPos = xPos;
+        if (eyeXenabled) {
+            this.eyeX = (2 * xPos) / screenWidth - 1;
+            eyeX *= 6;
+        }
+
+        if (centerXenabled) {
+            this.centerX = (2 * xPos) / screenWidth - 1;
+            this.centerX *= 6;
+            //centerX = centerX / 1.5f; // minska elasticitet
+        }
+    }
+
+    public void setYpos(float yPos) {
+
+        this.yPos = yPos;
+        if (eyeYenabled) {
+            this.eyeY = (2 * yPos) / screenHeight - 1;
+            eyeY *= 6;
+        }
+
+        if (centerYenabled) {
+            this.centerY = (2 * yPos) / screenHeight - 1;
+            this.centerY *= 6;
+            //centerY = centerY / 1.5f; // minska elasticitet
+        }
+    }
+
+    public void setDown(boolean down) {
+        this.down = down;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
+    }
+
+    public void setMove(boolean move) {
+        this.move = move;
+    }
+
+
+    public void setEyeXenabled(boolean eyeXenabled) {
+        this.eyeXenabled = eyeXenabled;
+    }
+
+    public void setEyeYenabled(boolean eyeYenabled) {
+        this.eyeYenabled = eyeYenabled;
+    }
+
+    public void setCenterXenabled(boolean centerXenabled) {
+        this.centerXenabled = centerXenabled;
+    }
+
+    public void setCenterYenabled(boolean centerYenabled) {
+        this.centerYenabled = centerYenabled;
+    }
+
+    public void setTranslateEnabled(boolean translateEnabled) {
+        this.translateEnabled = translateEnabled;
     }
 }
