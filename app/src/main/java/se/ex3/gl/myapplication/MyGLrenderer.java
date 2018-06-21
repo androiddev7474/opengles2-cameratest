@@ -99,8 +99,30 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     public void onSurfaceChanged(GL10 gl, int width, int height) {
 
 
-        gLprojection.perspectiveProject(width, height, 1, 10);
+        //gLprojection.perspectiveProject(width, height, 1.0f, 40f);
+        perspectiveProject(width, height, 1, 40);
     }
+
+
+    public void perspectiveProject(int width, int height, float near, float far) {
+
+
+        GLES20.glViewport(0, 0, width, height);
+
+        final float ratio = (float) width / height;
+        final float left = -ratio;
+        final float right = ratio;
+        final float bottom = -1.0f;
+        final float top = 1.0f;
+
+        //projicering
+        //Matrix.frustumM(gLprojection.getmProjectionMatrix(), 0, left, right, bottom, top, near, far);
+        Matrix.perspectiveM(gLprojection.getmProjectionMatrix(), 0, 45, ratio, near, far);
+        //perspectiveM(float[] m, int offset, float fovy, float aspect, float zNear, float zFar)
+
+    }
+
+
 
     @Override
     public void onDrawFrame(GL10 gl) {
@@ -131,7 +153,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         //Log.i("lookAT", xPos + " (" + eyeX + ")" );
         Log.i("Center X", "" + centerX);
 
-        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, -2f, centerX, centerY, -0, 0, 1, 0);
+        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, -7f, centerX, centerY, -0, 0, 1, 0);
 
 
         gLrender.render();
