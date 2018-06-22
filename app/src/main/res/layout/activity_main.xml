@@ -50,10 +50,64 @@
             android:layout_height="wrap_content"
             android:text="TRANSLATE"
             />
-
-
-
     </GridLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Field Of View"
+            />
+
+        <TextView
+            android:id="@+id/textViewFov"
+            android:layout_margin="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <SeekBar
+            android:id="@+id/seekBarFov"
+            android:max="180"
+            android:progress="45"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        />
+
+    </LinearLayout>
+
+    <LinearLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="30dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EyeZ"
+            />
+
+        <TextView
+            android:id="@+id/textViewEyeZ"
+            android:layout_margin="2dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <SeekBar
+            android:id="@+id/seekBarEyeZ"
+            android:max="12"
+            android:progress="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        />
+
+    </LinearLayout>
+
 
     <se.ex3.gl.myapplication.MyGLsurfaceView
         android:id="@+id/glsurface_id"
