@@ -36,7 +36,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     private boolean down, up, move;
 
     private float[] mViewMatrix = new float[16];
-    private int screenWidth, screenHeight;
+    private int screenWidth, screenHeight, viewportW, viewportH;
 
     private int nominator = 10000;
 
@@ -56,6 +56,8 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         screenHeight = displayMetrics.heightPixels;
 
         eyeXenabled = true;
+
+        eyeZ = -2;
 
         //models.create2Dpolygon(0.5f, 0.5f, 0f);
         models.create3Dpolygon(0.5f, 0.5f, 0.5f);
@@ -98,29 +100,12 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     @Override
     public void onSurfaceChanged(GL10 gl, int width, int height) {
 
-
+        viewportW = width;
+        viewportH = height;
         //gLprojection.perspectiveProject(width, height, 1.0f, 40f);
-        perspectiveProject(width, height, 1, 40);
+        gLprojection.perspectiveProject(width, height, 0.5f, 40.0f, 95.0f);
     }
 
-
-    public void perspectiveProject(int width, int height, float near, float far) {
-
-
-        GLES20.glViewport(0, 0, width, height);
-
-        final float ratio = (float) width / height;
-        final float left = -ratio;
-        final float right = ratio;
-        final float bottom = -1.0f;
-        final float top = 1.0f;
-
-        //projicering
-        //Matrix.frustumM(gLprojection.getmProjectionMatrix(), 0, left, right, bottom, top, near, far);
-        Matrix.perspectiveM(gLprojection.getmProjectionMatrix(), 0, 45, ratio, near, far);
-        //perspectiveM(float[] m, int offset, float fovy, float aspect, float zNear, float zFar)
-
-    }
 
 
 
@@ -153,7 +138,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         //Log.i("lookAT", xPos + " (" + eyeX + ")" );
         Log.i("Center X", "" + centerX);
 
-        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, -7f, centerX, centerY, -0, 0, 1, 0);
+        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, eyeZ, centerX, centerY, -0, 0, 1, 0);
 
 
         gLrender.render();
@@ -220,5 +205,15 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
     public void setTranslateEnabled(boolean translateEnabled) {
         this.translateEnabled = translateEnabled;
+    }
+
+    public void setFov(float fov) {
+
+        gLprojection.perspectiveProject(viewportW, viewportH, 1.0f, 40.0f, fov);
+    }
+
+    public void setEyeZ(float eyeZ) {
+
+        this.eyeZ = eyeZ;
     }
 }
