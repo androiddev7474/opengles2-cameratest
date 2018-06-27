@@ -1,3 +1,44 @@
 <resources>
-    <string name="app_name">My Application</string>
+    <string name="app_name">OpenGL ES Lookat</string>
+    <string name="def_val_eye_z">-4</string>
+    <string name="max_val_eye_z">12</string>
+    <string name="def_val_eye_x">50</string>
+    <string name="def_val_fov">45</string>
+
+    <string name="camera_info_labels">
+
+        <b>EYE</b> - the camera position in three dimensions X, Y, Z. The camera eye is pointing at the target.\n\n
+
+
+        <font fgcolor='#e0e1e2'>
+        <i>Change the cameras x-y position by swiping your finger in a horizontal (x) or vertical (y) direction. To change eye-Z use the eye-slider</i>\n\n\n
+        </font>
+
+
+        <b>CENTER - </b> how the camera eye is centered at the target in three dimensions X, Y, Z\n\n
+
+
+        <font fgcolor='#e0e1e2'>
+        <i>Change how the camera eye is centered at the target by swiping your finger in a horizontal (x) or vertical (y) direction. z-direction is not used here.
+            The center-switches has to be turned on.\n\n\n</i>
+        </font>
+
+
+        <b>FOV</b> - Field Of View - Mesure in degrees that determines how wide the field of view is
+        For instance - low fov-values has the effect of zooming in the object\n\n
+
+        <font fgcolor='#e0e1e2'>
+            <i>To change the fov just use the fov-slider</i>
+        </font>
+
+
+</string>
+
+
+<!-- ActivitySettings-->
+
+<string name="auto_rotate_label">Autorotate cube</string>
+
+
+
 </resources>

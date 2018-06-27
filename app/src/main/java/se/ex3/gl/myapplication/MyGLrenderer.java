@@ -1,8 +1,10 @@
 package se.ex3.gl.myapplication;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.GLES30;
 import android.opengl.GLSurfaceView;
 import android.opengl.Matrix;
 import android.os.SystemClock;
@@ -20,28 +22,29 @@ import compileshaders.opengles.se.shader_compile.*;
 
 public class MyGLrenderer implements GLSurfaceView.Renderer {
 
+    //primitiver
+    private boolean eyeXenabled, eyeYenabled, centerXenabled, centerYenabled, translateEnabled;
+    private float xPos, yPos;
+    private float fov; // Field Of View
+    private float eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
+    private boolean down, up, move;
+    private float[] mViewMatrix = new float[16];
+    private int screenWidth, screenHeight, viewportW, viewportH;
+    private int nominator = 10000;
+    int mProgramHandle;
 
+    private float[][] offsetCoords = {{0.0f, 0.0f}, {0.5f, 0.0f}, {0.0f, 0.5f}, {0.5f, 0.5f}};
+    private int imageID;
+
+
+    //egna klasser/bibliotek
     private Models models = new Models();
     private GLcamera gLcamera = new GLcamera();
     private GLprojection gLprojection = new GLprojection();
     private GLrender gLrender;
     private TextureCreator textureCreator;
 
-    private float incr, lookAtVar;
-    private boolean increment = true;
-    private boolean eyeXenabled, eyeYenabled, centerXenabled, centerYenabled, translateEnabled;
-
-    private float xPos, yPos;
-    private float eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
-    private boolean down, up, move;
-
-    private float[] mViewMatrix = new float[16];
-    private int screenWidth, screenHeight, viewportW, viewportH;
-
-    private int nominator = 10000;
-
-    int mProgramHandle;
-
+    //SDK-klasser
     private Context context;
 
     public MyGLrenderer(Context context) {
@@ -56,8 +59,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         screenHeight = displayMetrics.heightPixels;
 
         eyeXenabled = true;
-
-        eyeZ = -2;
+        eyeYenabled = true;
 
         //models.create2Dpolygon(0.5f, 0.5f, 0f);
         models.create3Dpolygon(0.5f, 0.5f, 0.5f);
@@ -103,7 +105,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         viewportW = width;
         viewportH = height;
         //gLprojection.perspectiveProject(width, height, 1.0f, 40f);
-        gLprojection.perspectiveProject(width, height, 0.5f, 40.0f, 95.0f);
+        gLprojection.perspectiveProject(width, height, 0.5f, 40.0f, fov);
     }
 
 
@@ -121,27 +123,45 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
         Matrix.setIdentityM(models.getmModelMatrix(), 0);
         Matrix.translateM(models.getmModelMatrix(), 0, -0f, 0.0f, -0.0f);
-        /*Matrix.rotateM(models.getmModelMatrix(), 0, angleInDegrees, 1.0f, 1.0f, 0.5f);
-        */
+
+        if (getAutoRotateState(SettingsActivity.MY_PREFS_NAME, SettingsActivity.AUTO_ROTATE)) {
+            Matrix.rotateM(models.getmModelMatrix(), 0, angleInDegrees, 1.0f, 1.0f, 0.5f);
+        }
+
         GLES20.glUseProgram(mProgramHandle);
 
-        if (lookAtVar > 3)
-            increment = false;
-        if (lookAtVar < -3)
-            increment = true;
 
-        if (increment)
-            lookAtVar += 0.01;
-        else
-            lookAtVar -= 0.01;
+        Log.i("lookAT", xPos + " (" + eyeX + ")" );
+        //Log.i("Center X", "" + centerX);
 
-        //Log.i("lookAT", xPos + " (" + eyeX + ")" );
-        Log.i("Center X", "" + centerX);
+        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, eyeZ, centerX, centerY, -0, 0.0f, 1, 0f);
 
-        Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, eyeZ, centerX, centerY, -0, 0, 1, 0);
+        if (Math.random() > 0.99) {
+            imageID = randomize();
+        }
+
+
+        int loc = GLES20.glGetUniformLocation(mProgramHandle, "offset_vec");
+        GLES20.glUniform2fv(loc, 1, offsetCoords[imageID], 0);
 
 
         gLrender.render();
+    }
+
+    private int randomize() {
+
+        int randNmbr = (int)(Math.random() * 4);
+
+        return randNmbr;
+    }
+
+
+    private boolean getAutoRotateState(String prefs_id, String bool_id) {
+
+        SharedPreferences prefs = context.getSharedPreferences(prefs_id, context.MODE_PRIVATE);
+        boolean restoredSwitchState = prefs.getBoolean(bool_id, false);
+
+        return restoredSwitchState;
     }
 
     public void setXpos(float xPos) {
@@ -150,12 +170,26 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         if (eyeXenabled) {
             this.eyeX = (2 * xPos) / screenWidth - 1;
             eyeX *= 6;
+
+            if (eyeX < 0) {
+                eyeX = eyeX * -1;
+            } else if (eyeX > 0) {
+                eyeX = -eyeX;
+            }
         }
+
+
 
         if (centerXenabled) {
             this.centerX = (2 * xPos) / screenWidth - 1;
             this.centerX *= 6;
-            //centerX = centerX / 1.5f; // minska elasticitet
+
+            if (centerX < 0) {
+                centerX = centerX * -1;
+            } else if (centerX > 0) {
+                centerX = -centerX;
+            }
+
         }
     }
 
@@ -165,12 +199,24 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         if (eyeYenabled) {
             this.eyeY = (2 * yPos) / screenHeight - 1;
             eyeY *= 6;
+
+            if (eyeY < 0) {
+                eyeY = eyeY * -1;
+            } else if (eyeY > 0) {
+                eyeY = -eyeY;
+            }
         }
 
         if (centerYenabled) {
             this.centerY = (2 * yPos) / screenHeight - 1;
             this.centerY *= 6;
-            //centerY = centerY / 1.5f; // minska elasticitet
+
+            if (centerY < 0) {
+                centerY = centerY * -1;
+            } else if (centerY > 0) {
+                centerY = -centerY;
+            }
+
         }
     }
 
@@ -210,6 +256,7 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
     public void setFov(float fov) {
 
         gLprojection.perspectiveProject(viewportW, viewportH, 1.0f, 40.0f, fov);
+        this.fov = fov;
     }
 
     public void setEyeZ(float eyeZ) {

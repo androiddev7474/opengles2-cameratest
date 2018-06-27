@@ -8,106 +8,164 @@
     tools:context=".MainActivity">
 
 
-    <GridLayout
+    <!-- layout som "wrappar" hela kamerapanelen. Behövs för att kunna döljas vid onTouch -->
+    <LinearLayout
+        android:id="@+id/camera_panel_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:rowCount="2"
-        android:columnCount="3"
-        >
+        android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/eyeX"
+        <GridLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EYE X"
-            android:checked="true"
-            />
+            android:rowCount="1"
+            android:columnCount="4"
+            >
 
-        <Switch
-            android:id="@+id/eyeY"
+            <Switch
+                android:id="@+id/eyeX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/margin_left"
+                android:text="EYE X"
+                android:textSize="@dimen/switch_textsize"
+                android:checked="true"
+                />
+
+            <Switch
+                android:id="@+id/eyeY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="EYE Y"
+                android:textSize="@dimen/switch_textsize"
+                android:checked="true"
+                />
+
+            <Switch
+                android:id="@+id/centerX"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CENTER X"
+                android:textSize="@dimen/switch_textsize"
+                />
+
+            <Switch
+                android:id="@+id/centerY"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CENTER Y"
+                android:textSize="@dimen/switch_textsize"
+                />
+
+        </GridLayout>
+
+
+
+        <!-- Layout som håller två slidebars med tillhörandes textviews, samt en imageview (klickbar) -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EYE Y"
-            />
+            android:orientation="horizontal"
+            >
 
-        <Switch
-            android:id="@+id/centerX"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CENTER X"
-            />
 
-        <Switch
-            android:id="@+id/centerY"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CENTER Y"
-            />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-        <Switch
-            android:id="@+id/translate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TRANSLATE"
-            />
-    </GridLayout>
+                <LinearLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="horizontal"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="@dimen/slider_height">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="30dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/margin_left"
+                        android:text="EYE Z"
+                        android:textSize="@dimen/switch_textsize"
+                        android:textColor="@color/colorAccent"
+                        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Field Of View"
-            />
+                    <TextView
+                        android:id="@+id/textViewEyeZ"
+                        android:layout_marginLeft="@dimen/margin_sliderval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/def_val_eye_z"
+                        android:textStyle="bold|italic"
+                        />
 
-        <TextView
-            android:id="@+id/textViewFov"
-            android:layout_margin="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+                    <SeekBar
+                        android:id="@+id/seekBarEyeZ"
+                        android:max="@string/max_val_eye_z"
+                        android:progress="@string/def_val_eye_z"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"/>
+                    />
 
-        <SeekBar
-            android:id="@+id/seekBarFov"
-            android:max="180"
-            android:progress="45"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        />
+                </LinearLayout>
 
-    </LinearLayout>
+                <LinearLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:orientation="horizontal"
+                    android:layout_width="@dimen/slider_width"
+                    android:layout_height="30dp">
 
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="30dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/margin_left"
+                        android:text="FOV"
+                        android:textSize="@dimen/switch_textsize"
+                        android:textColor="@color/colorAccent"
+                        />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="EyeZ"
-            />
+                    <TextView
+                        android:id="@+id/textViewFov"
+                        android:layout_marginLeft="@dimen/margin_sliderval"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/def_val_fov"
+                        android:textStyle="bold|italic"
+                        />
 
-        <TextView
-            android:id="@+id/textViewEyeZ"
-            android:layout_margin="2dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+                    <SeekBar
+                        android:id="@+id/seekBarFov"
+                        android:max="180"
+                        android:progress="45"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+                    />
+                </LinearLayout>
 
-        <SeekBar
-            android:id="@+id/seekBarEyeZ"
-            android:max="12"
-            android:progress="2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-        />
+            </LinearLayout>
 
-    </LinearLayout>
+            <ImageView
+                android:layout_width="@dimen/image_button_size"
+                android:layout_height="@dimen/image_button_size"
+                android:src="@drawable/settings"
+                android:clickable="true"
+                android:onClick="onSettingsClick"
 
+                />
+
+            <ImageView
+                android:layout_width="@dimen/image_button_size"
+                android:layout_height="@dimen/image_button_size"
+                android:src="@drawable/info"
+                android:clickable="true"
+                android:onClick="onInfoClick"
+
+                />
+
+
+        </LinearLayout>
+
+    </LinearLayout> // <!-- linearlayout för hela kamerapanelen -->
 
     <se.ex3.gl.myapplication.MyGLsurfaceView
         android:id="@+id/glsurface_id"
