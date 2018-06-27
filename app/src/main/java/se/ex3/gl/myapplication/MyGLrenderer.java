@@ -24,18 +24,18 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
     //primitiver
     private boolean eyeXenabled, eyeYenabled, centerXenabled, centerYenabled, translateEnabled;
+    private boolean down, up, move;
+    private boolean isFading;
     private float xPos, yPos;
     private float fov; // Field Of View
     private float eyeX, eyeY, eyeZ, centerX, centerY, centerZ;
-    private boolean down, up, move;
+    private float fraction;
+    private float[][] offsetCoords = {{0.0f, 0.0f}, {0.5f, 0.0f}, {0.0f, 0.5f}, {0.5f, 0.5f}};
     private float[] mViewMatrix = new float[16];
     private int screenWidth, screenHeight, viewportW, viewportH;
     private int nominator = 10000;
     int mProgramHandle;
-
-    private float[][] offsetCoords = {{0.0f, 0.0f}, {0.5f, 0.0f}, {0.0f, 0.5f}, {0.5f, 0.5f}};
-    private int imageID;
-
+    private int imageID, nextImageID;
 
     //egna klasser/bibliotek
     private Models models = new Models();
@@ -96,7 +96,6 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         gLrender.setHandles();
         //gLcamera.createCamera();
 
-
     }
 
     @Override
@@ -104,11 +103,8 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
         viewportW = width;
         viewportH = height;
-        //gLprojection.perspectiveProject(width, height, 1.0f, 40f);
         gLprojection.perspectiveProject(width, height, 0.5f, 40.0f, fov);
     }
-
-
 
 
     @Override
@@ -130,21 +126,44 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
         GLES20.glUseProgram(mProgramHandle);
 
-
-        Log.i("lookAT", xPos + " (" + eyeX + ")" );
+        //Log.i("lookAT", xPos + " (" + eyeX + ")" );
         //Log.i("Center X", "" + centerX);
 
         Matrix.setLookAtM(gLcamera.getmViewMatrix(), 0, eyeX, eyeY, eyeZ, centerX, centerY, -0, 0.0f, 1, 0f);
 
-        if (Math.random() > 0.99) {
-            imageID = randomize();
+        // krav att en fade mellan två texturer inte pågår just nu
+        if (Math.random() > 0.995 && !isFading) {
+            //imageID = randomize();
+            changeImageIndex();
+            int loc2 = GLES20.glGetUniformLocation(mProgramHandle, "offset_vec2");
+            GLES20.glUniform2fv(loc2, 1, offsetCoords[nextImageID], 0);
+
+            int isFadingVertex = GLES20.glGetUniformLocation(mProgramHandle, "isFadingVt");
+            GLES20.glUniform1i(isFadingVertex, 1);
+
+            int isFadingPixel = GLES20.glGetUniformLocation(mProgramHandle, "isFadingPx");
+            GLES20.glUniform1i(isFadingPixel, 1);
+
+            isFading = true;
+        }
+
+        if (isFading && fraction <= 1.0) {
+
+            fraction += 0.01;
+            int fracLoc = GLES20.glGetUniformLocation(mProgramHandle, "fraction");
+            GLES20.glUniform1f(fracLoc, fraction);
+
+            // //nollställ då fade är klar
+            if (fraction >= 1.0) {
+                fraction = 0;
+                isFading = false;
+                imageID = nextImageID;
+            }
         }
 
 
         int loc = GLES20.glGetUniformLocation(mProgramHandle, "offset_vec");
         GLES20.glUniform2fv(loc, 1, offsetCoords[imageID], 0);
-
-
         gLrender.render();
     }
 
@@ -153,6 +172,16 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         int randNmbr = (int)(Math.random() * 4);
 
         return randNmbr;
+    }
+
+    private void changeImageIndex() {
+
+        if (imageID < 3) {
+            nextImageID = imageID + 1;
+        } else {
+            nextImageID = 0;
+        }
+
     }
 
 
@@ -178,8 +207,6 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
             }
         }
 
-
-
         if (centerXenabled) {
             this.centerX = (2 * xPos) / screenWidth - 1;
             this.centerX *= 6;
@@ -189,9 +216,9 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
             } else if (centerX > 0) {
                 centerX = -centerX;
             }
-
         }
     }
+
 
     public void setYpos(float yPos) {
 
@@ -232,11 +259,6 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
         this.move = move;
     }
 
-
-    public void setEyeXenabled(boolean eyeXenabled) {
-        this.eyeXenabled = eyeXenabled;
-    }
-
     public void setEyeYenabled(boolean eyeYenabled) {
         this.eyeYenabled = eyeYenabled;
     }
@@ -247,10 +269,6 @@ public class MyGLrenderer implements GLSurfaceView.Renderer {
 
     public void setCenterYenabled(boolean centerYenabled) {
         this.centerYenabled = centerYenabled;
-    }
-
-    public void setTranslateEnabled(boolean translateEnabled) {
-        this.translateEnabled = translateEnabled;
     }
 
     public void setFov(float fov) {

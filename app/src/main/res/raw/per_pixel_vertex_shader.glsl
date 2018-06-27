@@ -1,37 +1,30 @@
-uniform mat4 u_MVPMatrix;		// A constant representing the combined model/view/projection matrix.      		       
-uniform mat4 u_MVMatrix;		// A constant representing the combined model/view matrix.       		
+uniform mat4 u_MVPMatrix;
+uniform mat4 u_MVMatrix;
+uniform vec2 offset_vec, offset_vec2; // dessa vektorer används till att justera den ursprungliga texturkoordinaten som är högst upp i vänstra hörnet till nästa koordinat i texturatlasen
+uniform int isFadingVt; // flagga för om texturen håller på att göra en fade
 
-attribute vec4 a_Position;		// Per-vertex position information we will pass in.
-attribute vec4 a_Color;			// Per-vertex color information we will pass in. 				
-attribute vec3 a_Normal;		// Per-vertex normal information we will pass in.      
-attribute vec2 a_TexCoordinate; // Per-vertex texture coordinate information we will pass in.
-uniform vec2 offset_vec;
+attribute vec4 a_Position;
+attribute vec4 a_Color;
+attribute vec3 a_Normal;
+attribute vec2 a_TexCoordinate;
 
-varying vec3 v_Position;		// This will be passed into the fragment shader.
-varying vec4 v_Color;			// This will b  e passed into the fragment shader.
-varying vec3 v_Normal;			// This will be passed into the fragment shader.  
-varying vec2 v_TexCoordinate;   // This will be passed into the fragment shader.    		
+varying vec2 v_TexCoordinate[2];
 
-uniform vec2 translate;
-attribute vec4 position;
+vec2 text_coord[2]; //nya texturkoordinater som är anpassade till den aktuella texturatlasen. Hårdkodat i nuläget
 
-varying vec4 vertexColor;
-
-vec2 text_coord;
-
-// The entry point for our vertex shader.  
 void main()
 {
 
-	v_Color = a_Color;
+    text_coord[0] = a_TexCoordinate * vec2(0.5, 0.5);
+    text_coord[0] = text_coord[0] + offset_vec;
+    v_TexCoordinate[0] = text_coord[0];
 
-    text_coord = a_TexCoordinate * vec2(0.5, 0.5);
-    //text_coord = text_coord + vec2(0.0, 0.5);
-    text_coord = text_coord + offset_vec;
-    v_TexCoordinate = text_coord;
+    if (isFadingVt == 1) {
 
-	vertexColor = vec4(0.9, 0.4, 0.9, 1.0);
+       text_coord[1] = a_TexCoordinate * vec2(0.5, 0.5);
+        text_coord[1] = text_coord[1] + offset_vec2;
+        v_TexCoordinate[1] = text_coord[1];
+    }
 
 	gl_Position = u_MVPMatrix * a_Position;
-
 }                                                          

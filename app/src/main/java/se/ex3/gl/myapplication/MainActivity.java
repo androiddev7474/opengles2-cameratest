@@ -19,8 +19,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int DEFAULT_EYE_Z_VAL = -4;
     public static final float DEFAULT_FOV_VAL = 45;
 
-
-
     //java/android api klasser
     private Switch eyeYswitch, centerXswitch, centerYswitch;
     private SeekBar seekBarFov, seekBarEyeX, seekBarEyeZ;
@@ -63,12 +61,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // called when the user first touches the SeekBar
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // called after the user finishes moving the SeekBar
+
             }
         });
 
@@ -77,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // updated continuously as the user slides the thumb
+
                 progress_val_eye = progress;
                 tvProgressLabelEyeZ.setText("" + (-progress));
                 myGLsurfaceView.getMyGLrenderer().setEyeZ(-progress);
@@ -85,12 +83,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
-                // called when the user first touches the SeekBar
+
             }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
-                // called after the user finishes moving the SeekBar
+
             }
         });
 
@@ -105,13 +103,11 @@ public class MainActivity extends AppCompatActivity {
         myGLsurfaceView.getMyGLrenderer().setFov(progress_val_fov);
         myGLsurfaceView.getMyGLrenderer().setEyeZ(progress_val_eye);
 
-
     }
 
     public void onPause() {
 
         super.onPause();
-
     }
 
 

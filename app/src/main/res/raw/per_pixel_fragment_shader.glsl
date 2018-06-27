@@ -1,22 +1,27 @@
-precision mediump float;       	// Set the default precision to medium. We don't need as high of a 
-								// precision in the fragment shader.
-uniform vec3 u_LightPos;       	// The position of the light in eye space.
-uniform sampler2D u_Texture;    // The input texture.
-  
-varying vec3 v_Position;		// Interpolated position for this fragment.
-varying vec4 v_Color;          	// This is the color from the vertex shader interpolated across the 
-  								// triangle per fragment.
-varying vec3 v_Normal;         	// Interpolated normal for this fragment.
-varying vec2 v_TexCoordinate;   // Interpolated texture coordinate per fragment.
+precision mediump float;
 
-varying vec4 vertexColor;
+uniform sampler2D u_Texture;
+uniform float fraction;
+uniform int isFadingPx; // flagga för om texturen håller på att göra en fade
 
- vec4 val;
-// The entry point for our fragment shader.
+varying vec2 v_TexCoordinate[2];
+
+vec4 PixelColor[2];
+
 void main()                    		
 {                              
 
-    gl_FragColor = texture2D(u_Texture, v_TexCoordinate);
+    //FADE
+
+    //villkor för att göra en "fade"
+    if (isFadingPx == 1) {
+
+        PixelColor[0] = texture2D(u_Texture,  v_TexCoordinate[0]);
+        PixelColor[1] = texture2D(u_Texture,  v_TexCoordinate[1]);
+        gl_FragColor = mix(PixelColor[0], PixelColor[1], fraction);
+    } else {
+        gl_FragColor = texture2D(u_Texture, v_TexCoordinate[0]);
+    }
 
 }                                                                     	
 
