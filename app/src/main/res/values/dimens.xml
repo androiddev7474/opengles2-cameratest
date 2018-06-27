@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="switch_textsize">10dp</dimen>
+    <dimen name="margin_left">2dp</dimen>
+    <dimen name="margin">5dp</dimen>
+    <dimen name="margin_sliderval">7dp</dimen>
+    <dimen name="slider_width">260dp</dimen>
+    <dimen name="slider_height">30dp</dimen>
+    <dimen name="image_button_size">40dp</dimen>
+
+</resources>
